@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* ── Light: Crisp Slate + Amber accent ── */
+  --color-mocha-50:  #f8f9fc;
+  --color-mocha-100: #eef0f7;
+  --color-mocha-200: #dde1f0;
+  --color-mocha-300: #b8c0dc;
+  --color-mocha-400: #7c8ab8;
+  --color-mocha-500: #e07b39;   /* amber accent */
+  --color-mocha-600: #c4611d;
+  --color-mocha-700: #2d3560;   /* deep navy text */
+  --color-mocha-800: #1a1f3d;
+  --color-mocha-900: #0f1226;
+
+  /* ── Dark: Deep Space Purple ── */
+  --color-ink-50:  #ede8f5;
+  --color-ink-100: #c4b8e0;
+  --color-ink-200: #9b88cb;
+  --color-ink-300: #5a4a8a;
+  --color-ink-400: #2e2555;
+  --color-ink-500: #1e1840;
+  --color-ink-600: #14102e;
+  --color-ink-700: #0c0a1e;
+  --color-ink-800: #070612;
+
+  /* ── Violet accent (dark mode) ── */
+  --color-violet-300: #d4bbff;
+  --color-violet-400: #b794ff;
+  --color-violet-500: #9b6dff;
+  --color-violet-600: #7c4dff;
+
+  --font-display: 'Playfair Display', serif;
+  --font-sans:    'DM Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, h4 { font-family: var(--font-display); }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  [data-theme='light'] ::-webkit-scrollbar-thumb { background: #e07b39; border-radius: 4px; }
+  [data-theme='dark']  ::-webkit-scrollbar-thumb { background: #9b6dff; border-radius: 4px; }
+}
+
+@layer utilities {
+  .glass-light {
+    background: rgba(248, 249, 252, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(124, 138, 184, 0.2);
+  }
+  .glass-dark {
+    background: rgba(30, 24, 64, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(155, 109, 255, 0.15);
+  }
+  .glow-violet {
+    box-shadow: 0 0 30px rgba(155, 109, 255, 0.15), 0 0 60px rgba(155, 109, 255, 0.05);
+  }
+  .glow-mocha {
+    box-shadow: 0 0 30px rgba(224, 123, 57, 0.12), 0 0 60px rgba(224, 123, 57, 0.05);
+  }
+}
