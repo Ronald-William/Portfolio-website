@@ -1,17 +1,8 @@
 const express = require('express');
-const router = express.Router();
-const nodemailer = require('nodemailer');
+const router  = express.Router();
+const { Resend } = require('resend');
 
-// Created once at startup — reuses SMTP connection, no cold-start delay
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  pool: true,
-  maxConnections: 1,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.post('/', async (req, res) => {
   const { name, email, subject, message } = req.body;
@@ -20,16 +11,16 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Name, email, and message are required.' });
   }
 
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    return res.status(500).json({ error: 'Email credentials not configured on server.' });
+  if (!process.env.RESEND_API_KEY) {
+    return res.status(500).json({ error: 'Email service not configured.' });
   }
 
   try {
-    await transporter.sendMail({
-      from: `"${name}" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_TO || process.env.EMAIL_USER,
-      replyTo: email,
-      subject: subject || `Portfolio Contact from ${name}`,
+    await resend.emails.send({
+      from:     'Portfolio Contact <onboarding@resend.dev>',
+      to:       process.env.EMAIL_TO || process.env.EMAIL_USER,
+      replyTo:  email,
+      subject:  subject || `Portfolio Contact from ${name}`,
       html: `
         <h2>New Portfolio Contact</h2>
         <p><strong>Name:</strong> ${name}</p>
@@ -38,11 +29,10 @@ router.post('/', async (req, res) => {
         <p>${message.replace(/\n/g, '<br/>')}</p>
       `,
     });
-
     res.json({ success: true, message: 'Email sent successfully!' });
   } catch (err) {
-    console.error('Email error:', err.message);
-    res.status(500).json({ error: 'Failed to send email. Please try again later.' });
+    console.error('Resend error:', err.message);
+    res.status(500).json({ error: `Failed to send: ${err.message}` });
   }
 });
 
