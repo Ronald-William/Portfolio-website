@@ -1,19 +1,21 @@
-const express = require('express');
-const router = express.Router();
+const express    = require('express');
+const router     = express.Router();
 const nodemailer = require('nodemailer');
 
-// Created once at startup — reuses SMTP connection, no cold-start delay
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
   secure: false,
-  family: 4, // force IPv4
+  family: 4,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  pool: true,
-  maxConnections: 1,
+  pool:              true,
+  maxConnections:    1,
+  connectionTimeout: 10000,
+  greetingTimeout:   10000,
+  socketTimeout:     15000,
 });
 
 router.post('/', async (req, res) => {
@@ -29,8 +31,8 @@ router.post('/', async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: `"${name}" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_TO || process.env.EMAIL_USER,
+      from:    `"${name}" <${process.env.EMAIL_USER}>`,
+      to:      process.env.EMAIL_TO || process.env.EMAIL_USER,
       replyTo: email,
       subject: subject || `Portfolio Contact from ${name}`,
       html: `
@@ -41,11 +43,10 @@ router.post('/', async (req, res) => {
         <p>${message.replace(/\n/g, '<br/>')}</p>
       `,
     });
-
     res.json({ success: true, message: 'Email sent successfully!' });
   } catch (err) {
     console.error('Email error:', err.message);
-    res.status(500).json({ error: 'Failed to send email. Please try again later.' });
+    res.status(500).json({ error: `Failed to send: ${err.message}` });
   }
 });
 
